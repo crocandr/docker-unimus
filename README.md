@@ -3,7 +3,7 @@
 ## Build
 
 ```
-docker build croc/unimus .
+docker build -t croc/unimus .
 ```
 
 ## Run
@@ -31,7 +31,13 @@ Start your Unimus:
 docker run -tid --name=unimus -p 8085:8085 -e /srv/unimus/config:/etc/unimus/ --link=unimus-db:db croc/unimus /opt/start.sh
 ```
 
-You have to use the `db` as `Host` at the Unimus' MySQL config.
+You have to use these parameters with Unimus' MySQL config:
+  - db host: `db`
+  - db: `unimus`
+  - db user: `unimus`
+  - db pass: `secret`
+
+Good for a test, but not too secure.
 
 ## Usage
 

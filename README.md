@@ -1,5 +1,10 @@
 # Unimus in Docker
 
+Unimus is a multi-vendor network device configuration backup and management solution, designed from the ground up with user friendliness, workflow optimization and ease-of-use in mind.
+
+  - https://unimus.net/
+  - https://wiki.unimus.net/display/UNPUB/Running+in+Docker
+
 ## Build
 
 ```

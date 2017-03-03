@@ -37,7 +37,7 @@ docker run -tid --name=unimus -p 8085:8085 -v /srv/unimus/config:/etc/unimus/ --
 ```
 
 You have to use these parameters with Unimus' MySQL config:
-  - db host: `db`
+  - db host: `db` (if you've started with docker-compose, use the name of the database container `unimus-db`)
   - db: `unimus`
   - db user: `unimus`
   - db pass: `secret`

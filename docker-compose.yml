@@ -1,0 +1,27 @@
+version: "3"
+
+services:
+
+  unimus-db:
+    image: mariadb
+    container_name: unimus-db
+    environment:
+      - MYSQL_ROOT_PASSWORD=supersecret
+      - MYSQL_DATABASE=unimus
+      - MYSQL_USER=unimus
+      - MYSQL_PASSWORD=secret
+    volumes:
+      - /srv/unimus/db:/var/lib/mysql
+      
+  unimus:
+    image: croc/unimus
+    container_name: unimus
+    depends_on:
+      - unimus-db
+    ports:
+      - "8085:8085"
+    volumes:
+      - /srv/unimus/config:/etc/unimus
+    entrypoint:
+      - /opt/start.sh
+

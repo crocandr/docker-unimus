@@ -13,9 +13,9 @@ RUN apt-get install -y openjdk-8-jre-headless
 # Unimus version
 #
 # Specified version
-#RUN curl -L -o /opt/unimus.jar https://unimus.net/download/0.3.0/Unimus.jar
+RUN curl -L -o /opt/unimus.jar https://unimus.net/download/0.3.2/Unimus.jar
 # Latest version
-RUN curl -L -o /opt/unimus.jar https://unimus.net/download/-%20Latest/Unimus.jar
+#RUN curl -L -o /opt/unimus.jar https://unimus.net/download/-%20Latest/Unimus.jar
 #
 # Start script
 #

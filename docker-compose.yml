@@ -14,7 +14,7 @@ services:
       - /srv/unimus/db:/var/lib/mysql
       
   unimus:
-    image: croc/unimus:v0.3.3
+    image: croc/unimus
     container_name: unimus
     depends_on:
       - unimus-db

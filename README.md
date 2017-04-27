@@ -44,15 +44,32 @@ You have to use these parameters with Unimus' MySQL config:
 
 Good for a test, but not too secure.
 
+## Docker compose
+
+I've written a `docker-compose.yml` file for easier start with database.
+
+Start:
+```
+docker-compose up -d
+```
+
+...and that's it :)
+
 ## Usage
 
-You can access the Unimus' URL on http://< your docker host>:8085 , example: http://192.168.56.103:8085
+Default Unimus' URL is http://< your docker host>:8085 , example: http://192.168.56.103:8085
 
 You have to configure your Unimus after the first start on this URL.
 
 You have to register on https://unimus.net/ for license keys.
 
+## Update
 
+If you want to update unimus with this "stack".
+  - stop all containers ( example: `docker stop unimus unimus-db` or `docker-compose stop` )
+  - remove all containers ( example: `docker rm -v unimus unimus-db` or `docker-compose rm -v -f` )
+  - pull new images ( example: `docker pull croc/unimus` and `docker pull mariadb` or remove images to pull new `docker rmi croc/unimus mariadb` )
+  - start the stack again 
 
 
 Good luck!

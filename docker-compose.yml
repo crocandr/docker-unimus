@@ -11,7 +11,7 @@ services:
       - MYSQL_USER=unimus
       - MYSQL_PASSWORD=secret
     volumes:
-      - /srv/unimus/db:/var/lib/mysql
+      - ./db:/var/lib/mysql
       
   unimus:
     image: croc/unimus
@@ -21,7 +21,7 @@ services:
     ports:
       - "8085:8085"
     volumes:
-      - /srv/unimus/config:/etc/unimus
+      - ./config:/etc/unimus
     entrypoint:
       - /opt/start.sh
 

@@ -12,7 +12,7 @@ services:
       - MYSQL_PASSWORD=secret
     volumes:
       - ./db:/var/lib/mysql
-      
+      - /etc/localtime:/etc/localtime:ro
   unimus:
     image: croc/unimus
     container_name: unimus
@@ -22,6 +22,7 @@ services:
       - "8085:8085"
     volumes:
       - ./config:/etc/unimus
+      - /etc/localtime:/etc/localtime:ro
     entrypoint:
       - /opt/start.sh
 

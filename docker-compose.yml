@@ -14,7 +14,7 @@ services:
       - ./db:/var/lib/mysql
       - /etc/localtime:/etc/localtime:ro
   unimus:
-    image: croc/unimus
+    image: croc/unimus:v1.5.1
     container_name: unimus
     depends_on:
       - unimus-db

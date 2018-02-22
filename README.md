@@ -19,7 +19,7 @@ You can use HSQL (local - file based) or MySQL (with an other container) for the
 ### with HSQL
 
 ```
-docker run -tid --name=unimus -p 8085:8085 -e /srv/unimus/config:/etc/unimus/ -v /srv/unimus/db:/var/unimus/hsql croc/unimus /opt/start.sh
+docker run -tid --name=unimus -p 8085:8085 -e /srv/unimus/config:/etc/unimus/ -v /srv/unimus/db:/var/unimus/hsql croc/unimus
 ```
 
 ### with MySQL
@@ -33,7 +33,7 @@ docker run -tid --name=unimus-db -v /srv/unimus/db:/var/lib/mysql -e MYSQL_ROOT_
 Start your Unimus:
 
 ```
-docker run -tid --name=unimus -p 8085:8085 -v /srv/unimus/config:/etc/unimus/ --link=unimus-db:db croc/unimus /opt/start.sh
+docker run -tid --name=unimus -p 8085:8085 -v /srv/unimus/config:/etc/unimus/ --link=unimus-db:db croc/unimus
 ```
 
 You have to use these parameters with Unimus' MySQL config:

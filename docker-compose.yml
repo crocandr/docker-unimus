@@ -10,9 +10,10 @@ services:
       - MYSQL_DATABASE=unimus
       - MYSQL_USER=unimus
       - MYSQL_PASSWORD=secret
+      #- TZ=Europe/Budapest
     volumes:
       - ./db:/var/lib/mysql
-      - /etc/localtime:/etc/localtime:ro
+      #- /etc/localtime:/etc/localtime:ro
   unimus:
     image: croc/unimus:v1.5.1
     container_name: unimus
@@ -20,9 +21,8 @@ services:
       - unimus-db
     ports:
       - "8085:8085"
+    environment:
+      - TZ=Europe/Budapest
     volumes:
       - ./config:/etc/unimus
-      - /etc/localtime:/etc/localtime:ro
-    entrypoint:
-      - /opt/start.sh
-
+      #- /etc/localtime:/etc/localtime:ro

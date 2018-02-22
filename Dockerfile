@@ -1,6 +1,6 @@
 FROM ubuntu:xenial
 
-RUN apt-get update && apt-get install -y curl vim less wget
+RUN apt-get update && apt-get install -y curl vim less wget tzdata
 
 #
 # Java, JDK
@@ -21,4 +21,6 @@ RUN curl -L -o /opt/unimus.jar https://unimus.net/download/-%20Latest/Unimus.jar
 #
 COPY files/start.sh /opt/start.sh
 RUN chmod 755 /opt/start.sh
+
+ENTRYPOINT /opt/start.sh
 

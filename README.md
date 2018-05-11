@@ -14,7 +14,7 @@ docker build -t croc/unimus .
 ## Run
 
 You've to have a DB for the Unimus.
-You can use HSQL (local - file based) or MySQL (with an other container) for the backend DB.
+You can use HSQL (local - file-based) or MySQL (with an other container) for the backend DB.
 
 ### with HSQL
 
@@ -46,7 +46,7 @@ Good for a test, but not too secure.
 
 ## Docker compose
 
-I've written a `docker-compose.yml` file for easier start with database.
+I've written a `docker-compose.yml` file for easier start with the database.
 
 Start:
 ```
@@ -54,6 +54,18 @@ docker-compose up -d
 ```
 
 ...and that's it :)
+
+### Specify a version
+
+How to use a specified version with docker-compose file? <br />
+Add the version tag to the unimus image line. <br / >
+Example:
+```
+image: croc/unimus:v1.7.0
+```
+
+Sorry, you can't build an image with an older unimus version, because I don't know the download URL for an older version. So I've built the docker image for the latest binary when it was an older version. <br />
+I recommend use the latest version, always.
 
 ## Usage
 

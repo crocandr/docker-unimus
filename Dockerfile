@@ -1,6 +1,5 @@
 FROM ubuntu:xenial
 
-#ENV DOWNLOAD_URL https://unimus.net/download/1.6.1/Unimus.jar
 ENV DOWNLOAD_URL https://unimus.net/download/-%20Latest/Unimus.jar
 
 RUN apt-get update && apt-get install -y curl vim less wget tzdata

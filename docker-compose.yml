@@ -1,10 +1,8 @@
 version: "3"
 
 services:
-
-  unimus-db:
+  db:
     image: mariadb
-    container_name: unimus-db
     environment:
       - MYSQL_ROOT_PASSWORD=supersecret
       - MYSQL_DATABASE=unimus
@@ -12,17 +10,18 @@ services:
       - MYSQL_PASSWORD=secret
       #- TZ=Europe/Budapest
     volumes:
-      - ./db:/var/lib/mysql
-      #- /etc/localtime:/etc/localtime:ro
+      - './db:/var/lib/mysql'
+      - '/etc/localtime:/etc/localtime:ro'
+    restart: unless-stopped
   unimus:
-    image: croc/unimus:v1.6.1
-    container_name: unimus
-    depends_on:
-      - unimus-db
-    ports:
-      - "8085:8085"
+    image: croc/unimus
     environment:
       - TZ=Europe/Budapest
     volumes:
-      - ./config:/etc/unimus
-      #- /etc/localtime:/etc/localtime:ro
+      - './config:/etc/unimus'
+      #- '/etc/localtime:/etc/localtime:ro'
+    depends_on:
+      - db
+    ports:
+      - '8085:8085'
+    restart: unless-stopped

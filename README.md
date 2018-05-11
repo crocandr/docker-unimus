@@ -58,7 +58,7 @@ docker-compose up -d
 ### Specify a version
 
 How to use a specified version with docker-compose file? <br />
-Add the version tag to the unimus image line. <br / >
+Add the version tag to the unimus image line. <br />
 Example:
 ```
 image: croc/unimus:v1.7.0

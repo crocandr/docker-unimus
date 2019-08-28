@@ -1,11 +1,11 @@
-FROM ubuntu:xenial
+FROM debian:buster
 
 ENV DOWNLOAD_URL https://unimus.net/download/-%20Latest/Unimus.jar
 
 RUN apt-get update && apt-get install -y curl vim less wget tzdata
 
 # OpenJDK
-RUN apt-get install -y openjdk-8-jre-headless
+RUN apt-get install -y openjdk-11-jre-headless
 #
 # Unimus 
 RUN curl -L -o /opt/unimus.jar $DOWNLOAD_URL

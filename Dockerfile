@@ -2,13 +2,15 @@ FROM debian:buster
 
 ENV DOWNLOAD_URL https://unimus.net/download/-%20Latest/Unimus.jar
 
+COPY files/Unimus.jar /opt/unimus.jar
+
 RUN apt-get update && apt-get install -y curl vim less wget tzdata
 
 # OpenJDK
 RUN apt-get install -y openjdk-11-jre-headless
 #
 # Unimus 
-RUN curl -L -o /opt/unimus.jar $DOWNLOAD_URL
+#RUN curl -k -L -o /opt/unimus.jar $DOWNLOAD_URL
 #
 # Start script
 COPY files/start.sh /opt/start.sh

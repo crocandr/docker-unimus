@@ -2,6 +2,9 @@ FROM debian:buster
 
 ENV DOWNLOAD_URL https://unimus.net/download/-%20Latest/Unimus.jar
 
+# Check the https://github.com/crocandr/docker-unimus/issues/4 for download URLs.
+# ENV DOWNLOAD_URL https://unimus.net/download/1.10.3/Unimus.jar
+
 RUN apt-get update && apt-get install -y curl vim less wget tzdata
 
 # OpenJDK

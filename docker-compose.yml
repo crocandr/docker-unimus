@@ -14,7 +14,7 @@ services:
       - '/etc/localtime:/etc/localtime:ro'
     restart: unless-stopped
   unimus:
-    image: croc/unimus
+    image: croc/unimus:dev
     environment:
       - TZ=Europe/Budapest
     volumes:

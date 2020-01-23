@@ -58,6 +58,7 @@ docker-compose up -d
 
 Check the docker-compose file for extra parameters!
 
+
 ### Specify a version
 
 How to use a specified version with docker-compose file? <br />

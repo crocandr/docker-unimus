@@ -14,7 +14,7 @@ services:
       - '/etc/localtime:/etc/localtime:ro'
     restart: unless-stopped
   unimus:
-    image: croc/unimus:dev
+    image: croc/unimus
     environment:
       # base memory params for java
       - XMX=1024M

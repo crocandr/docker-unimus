@@ -1,6 +1,6 @@
 FROM debian:buster
 
-ENV DOWNLOAD_URL https://unimus.net/download/dev-builds/Unimus.jar
+ENV DOWNLOAD_URL https://unimus.net/download-unimus/dev-builds/Unimus.jar
 
 RUN apt-get update && apt-get install -y curl vim less wget tzdata
 

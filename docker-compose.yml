@@ -29,4 +29,5 @@ services:
       - db
     ports:
       - '8085:8085'
+      - '5509:5509'
     restart: unless-stopped

@@ -29,4 +29,5 @@ services:
       - db
     ports:
       - '8085:8085'
+#      - '5509:5509' # for unimus-core connection if the unimus version is higher than 2.0.0
     restart: unless-stopped

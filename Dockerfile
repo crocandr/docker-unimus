@@ -1,11 +1,18 @@
-FROM debian:buster
+FROM archlinux:20200407
 
 ENV DOWNLOAD_URL https://unimus.net/download-unimus/dev-builds/Unimus.jar
 
-RUN apt-get update && apt-get install -y curl vim less wget tzdata
+#RUN apt-get update && apt-get install -y curl vim less wget tzdata
+RUN pacman -Sy --noconfirm curl tzdata
 
 # OpenJDK
-RUN apt-get install -y openjdk-11-jre-headless
+# 13.02
+#RUN pacman -S --noconfirm jre-openjdk-headless
+# 11.06
+#RUN pacman -S --noconfirm jre11-openjdk-headless
+# 8
+RUN pacman -S --noconfirm jre8-openjdk-headless
+
 #
 # Unimus 
 RUN curl -L -o /opt/unimus.jar $DOWNLOAD_URL

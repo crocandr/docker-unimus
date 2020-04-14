@@ -11,4 +11,5 @@ ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
 
 # run
+java --version
 java $JAVA_EXTRA_PARAMS -jar /opt/unimus.jar

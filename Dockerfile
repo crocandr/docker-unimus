@@ -1,6 +1,6 @@
 FROM debian:buster
 
-ENV DOWNLOAD_URL https://unimus.net/download-unimus/-%20Latest/Unimus.jar
+ENV DOWNLOAD_URL https://download.unimus.net/unimus/-%20Latest/Unimus.jar
 
 # Check the https://github.com/crocandr/docker-unimus/issues/4 for download URLs.
 # ENV DOWNLOAD_URL https://unimus.net/download-unimus/1.10.3/Unimus.jar

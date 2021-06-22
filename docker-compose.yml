@@ -3,7 +3,7 @@ version: "3"
 services:
   db:
     image: mariadb
-    command: --max_allowed_packet=268435456
+    command: --max_allowed_packet=268M
     environment:
       - MYSQL_ROOT_PASSWORD=supersecret
       - MYSQL_DATABASE=unimus

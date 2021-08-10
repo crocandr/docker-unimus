@@ -4,11 +4,17 @@ ENV DOWNLOAD_URL https://unimus.net/download-unimus/dev-builds/Unimus.jar
 
 RUN apt-get update && apt-get install -y curl vim less wget tzdata
 
-# OpenJDK
-RUN apt-get install -y openjdk-11-jdk-headless
 #
 # Unimus 
 RUN curl -L -o /opt/unimus.jar $DOWNLOAD_URL
+
+# JDK install and check
+RUN apt-get install -y openjdk-11-jdk-headless && \
+    jarsigner -verify /opt/unimus.jar | grep -i "jar verified" || { echo "Unimus binary is not verified"; exit 1; } && \
+    apt-get purge -y openjdk-11-jdk-headless
+# JRE install
+RUN apt-get install -y openjdk-11-jre-headless  
+
 #
 # Start script
 COPY files/start.sh /opt/start.sh

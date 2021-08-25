@@ -16,13 +16,17 @@ docker build -t croc/unimus .
 You've to have a DB for the Unimus.
 You can use HSQL (local - file-based) or MySQL (with an other container) for the backend DB.
 
+You can run the unimus with 2 method:
+  - with `docker run ...` command
+  - with `docker-compose` (recommended way)
+
 ### with HSQL
 
 ```
 docker run -tid --name=unimus -p 8085:8085 -v /srv/unimus/config:/etc/unimus/ croc/unimus
 ```
 
-Configuration and HSQL databases files is in `/etc/unimus` folder in the container. 
+Configuration and HSQL databases files is in `/etc/unimus` folder in the container.
 
 ### with MySQL
 
@@ -60,14 +64,13 @@ docker-compose up -d
 
 Check the docker-compose file for extra parameters!
 
-
 ### Specify a version
 
 How to use a specified version with docker-compose file? <br />
 Add the version tag to the unimus image line. <br />
 Example:
 ```
-image: croc/unimus:v1.7.0
+image: croc/unimus:v2.1.0
 ```
 
 Sorry, you can't build an image with an older unimus version, because I don't know the download URL for an older version. So I've built the docker image for the latest binary when it was an older version. <br />
@@ -83,11 +86,30 @@ You have to register on https://unimus.net/ for license keys.
 
 ## Update
 
-If you want to update unimus with this "stack".
+If you want to update unimus with this "stack":
   - stop all containers ( example: `docker stop unimus unimus-db` or `docker-compose stop` )
   - remove all containers ( example: `docker rm -v unimus unimus-db` or `docker-compose rm -v -f` )
   - pull new images ( example: `docker pull croc/unimus` and `docker pull mariadb` or remove images to pull new `docker rmi croc/unimus mariadb` )
-  - start the stack again 
+  - start the stack again
+
+
+## More config options
+
+Check the official documentation for more options.
+
+  - https://wiki.unimus.net/display/UNPUB/Initial+configuration
+
+### Behind a proxy
+
+Check these pages:
+  - https://wiki.unimus.net/display/UNPUB/Running+Unimus+behind+a+HTTP%28S%29+proxy
+  - https://github.com/crocandr/docker-unimus/issues/14
+
+Add the some extra parameters into the docker-compose file for the proxy connection. Example:
+```
+- JAVA_OPTS=-Xms256M -Xmx1024M -Dhttp.proxyHost=1.1.1.1 -Dhttp.proxyPort=8080 -Dhttps.proxyHost=2.2.2.2 -Dhttps.proxyPort=8443
+```
+
 
 
 Good luck!

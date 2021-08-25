@@ -18,10 +18,10 @@ services:
     image: croc/unimus
     environment:
       # base memory params for java
-      - XMX=1024M
-      - XMS=256M
+      #- XMX=1024M
+      #- XMS=256M
       # OR more customizable JAVA options
-#      - JAVA_OPTS=-Xms128M -Xmx512M
+      - JAVA_OPTS=-Xms256M -Xmx1024M
       - TZ=Europe/Budapest
     volumes:
       - './config:/etc/unimus'

@@ -21,7 +21,7 @@ services:
       #- XMX=1024M
       #- XMS=256M
       # OR more customizable JAVA options
-      - JAVA_OPTS=-Xms256M -Xmx1024M
+      - JAVA_OPTS=-Xms256M -Xmx1024M -Dunimus.core.connect-timeout=20000 -Dunimus.core.inter-connection-delay=1000 -Dunimus.core.cli-expect-timeout=30000
       - TZ=Europe/Budapest
     volumes:
       - './config:/etc/unimus'

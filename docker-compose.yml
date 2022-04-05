@@ -4,6 +4,7 @@ services:
   db:
     image: mariadb
     command: --max_allowed_packet=268M
+#    user: 1000
     environment:
       - MYSQL_ROOT_PASSWORD=supersecret
       - MYSQL_DATABASE=unimus
@@ -15,7 +16,9 @@ services:
       - '/etc/localtime:/etc/localtime:ro'
     restart: unless-stopped
   unimus:
-    image: croc/unimus
+    image: croc/unimus:dev-999
+#    image: croc/unimus
+#    user: 1000
     environment:
       # base memory params for java
       #- XMX=1024M
@@ -26,6 +29,7 @@ services:
     volumes:
       - './config:/etc/unimus'
       #- '/etc/localtime:/etc/localtime:ro'
+      - './log:/var/log/unimus'
     depends_on:
       - db
     ports:

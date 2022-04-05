@@ -83,17 +83,29 @@ Step into the helm folder:
 cd helm/unimus
 ```
 
-Set `Chart.yml` and `values.yml` with your parameters. (Check Helm documentations for more information)
+Set variables in the `Chart.yml` and the `values.yml` files with your parameters. (Check Helm documentations for more information)
 
 ... and install
 ```
 helm upgrade --install unimustest . -n unimus --debug
 ```
 
-  - `update --install` option is usefull when "already exists" or something similar error message appears.
+  - `update --install` option is usefull when "already exists" or something similar error message appears
   - `.` is the actual folder
   - `-n unimus` is the namespace (unimus) on your kubernetes (or alternative) cluster  
   - `--debug` option is optional, but useful :)
+
+### DB
+
+You can run separate Database with helm. Example:
+```
+helm repo add bitnami https://charts.bitnami.com/bitnami
+helm upgrade --install unimusdb -n unimus --set auth.database=unimus --set auth.username=unimus --set auth.password=secret bitnami/mariadb
+```
+
+With this example, the DB host is `unimusdb-mariadb`, the name of the unimusdb service (`kubectl -n unimus get services`). 
+
+Please change these example passwords with your more secure password and use more secure setting like this. This is just an easy and quick example.
 
 ## Usage
 
@@ -110,6 +122,23 @@ If you want to update unimus with this "stack":
   - remove all containers ( example: `docker rm -v unimus unimus-db` or `docker-compose rm -v -f` )
   - pull new images ( example: `docker pull croc/unimus` and `docker pull mariadb` or remove images to pull new `docker rmi croc/unimus mariadb` )
   - start the stack again
+
+## Podman and podman-compose
+
+You can run these container with podman too. But You should create some folders before start.
+
+Example:
+```
+mkdir config logs
+chmod 775 config logs
+```
+
+... and after update the user ID in the compose file: `user: <your user ID>`
+... and start the stack with podman-compose:
+```
+podman-compose -f docker-compose.yml up -d
+```
+
 
 ## More config options
 

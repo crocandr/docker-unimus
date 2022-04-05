@@ -36,20 +36,20 @@ RUN apt-get install -y openjdk-11-jre-headless && \
     echo "Verified checksum: $CHECKSUM"
 
 # user
-RUN groupadd -g 1000 appgroup && \
-    useradd -s /bin/bash -m -g appgroup -u 1000 appuser
+RUN groupadd -g 10000 appgroup && \
+    useradd -s /bin/bash -m -g appgroup -u 10000 appuser
 
 RUN mkdir /etc/unimus && \
-    chown 1000:1000 /etc/unimus && \ 
+    chown appuser:appgroup /etc/unimus && \ 
     chmod 775 /etc/unimus
 RUN mkdir /var/log/unimus && \
-    chown 1000:1000 /var/log/unimus && \
-    chmod 755 /var/log/unimus
+    chown appuser:appgroup /var/log/unimus && \
+    chmod 775 /var/log/unimus
 #
 # Start script
 COPY files/start.sh /opt/start.sh
 RUN chmod 755 /opt/start.sh
 #
-USER 1000
+USER appuser 
 #
 ENTRYPOINT /opt/start.sh

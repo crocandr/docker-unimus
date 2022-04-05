@@ -6,8 +6,8 @@ JAVA_EXTRA_PARAMS=""
 [ ! -z "$XMX" ] && { JAVA_EXTRA_PARAMS="$JAVA_EXTRA_PARAMS -Xmx$XMX"; }
 [ ! -z "$JAVA_OPTS" ] && { JAVA_EXTRA_PARAMS="$JAVA_OPTS"; }
 
-[ -z "$TZ" ] && { TZ="UTC"; }
-ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
+#[ -z "$TZ" ] && { TZ="UTC"; }
+#ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
 # verify jar
 if [ $( which jarsigner | wc -l ) -gt 0 ]

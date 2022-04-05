@@ -76,6 +76,25 @@ image: croc/unimus:v2.1.0
 Sorry, you can't build an image with an older unimus version, because I don't know the download URL for an older version. So I've built the docker image for the latest binary when it was an older version. <br />
 I recommend use the latest version, always.
 
+## Helm
+
+Step into the helm folder:
+```
+cd helm/unimus
+```
+
+Set `Chart.yml` and `values.yml` with your parameters. (Check Helm documentations for more information)
+
+... and install
+```
+helm upgrade --install unimustest . -n unimus --debug
+```
+
+  - `update --install` option is usefull when "already exists" or something similar error message appears.
+  - `.` is the actual folder
+  - `-n unimus` is the namespace (unimus) on your kubernetes (or alternative) cluster  
+  - `--debug` option is optional, but useful :)
+
 ## Usage
 
 Default Unimus' URL is http://< your docker host>:8085 , example: http://192.168.56.103:8085
@@ -91,7 +110,6 @@ If you want to update unimus with this "stack":
   - remove all containers ( example: `docker rm -v unimus unimus-db` or `docker-compose rm -v -f` )
   - pull new images ( example: `docker pull croc/unimus` and `docker pull mariadb` or remove images to pull new `docker rmi croc/unimus mariadb` )
   - start the stack again
-
 
 ## More config options
 

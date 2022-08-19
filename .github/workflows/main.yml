@@ -1,0 +1,125 @@
+# This is a basic workflow to help you get started with Actions
+
+name: Auto-CI
+
+# Controls when the workflow will run
+on:
+  # Triggers the workflow on push or pull request events but only for the "master" branch
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+  schedule:
+    - cron: '00 5 * * 2,4,6'
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  # This workflow contains a single job called "build"
+  build-amd64:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v3
+      - name: build image - AMD64
+        run: |
+          docker build --rm -t croc/unimus . || { echo "docker image build failed - amd64"; exit 1; }
+          # create registry tag
+          docker tag croc/unimus croc/unimus
+          docker tag croc/unimus quay.io/croc/unimus
+          docker images croc/unimus
+      - name: check image and add version tag
+        run: |
+          docker-compose up -d
+          echo "waiting for up ..."
+          sleep 5
+          UNIMUS_CORE_VERSION=$( docker-compose logs unimus | awk -F ':' '/version/{ print $5 }' | awk '{ print $2 }' | tail -n1 )
+          echo "Unimus core version: $UNIMUS_CORE_VERSION"
+          [ -z "$UNIMUS_CORE_VERSION" ] && { echo "Unimus core version not found"; exit 1; }
+          # create version tag
+          docker tag croc/unimus croc/unimus:$UNIMUS_CORE_VERSION
+          docker tag croc/unimus quay.io/croc/unimus:$UNIMUS_CORE_VERSION
+          # save version number for arm build
+          echo $UNIMUS_CORE_VERSION > unimus.ver
+      - name: upload artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: versionfile
+          path: unimus.ver
+      - name: push container
+        env:
+          DOCKERHUB_USER: ${{ secrets.DOCKERHUB_USER }}
+          DOCKERHUB_PASS: ${{ secrets.DOCKERHUB_PASS }}
+          QUAYIO_USER: ${{ secrets.QUAYIO_USER }}
+          QUAYIO_PASS: ${{ secrets.QUAYIO_PASS }}
+        run: |
+          echo "$DOCKERHUB_PASS" | docker login --username=$DOCKERHUB_USER --password-stdin
+          echo "$QUAYIO_PASS" | docker login --username=$QUAYIO_USER --password-stdin quay.io
+          docker images | grep -iw unimus
+          # push latest images
+          docker push croc/unimus
+          docker push quay.io/croc/unimus
+          # push version tag
+          VERSION=$( docker images | grep -i croc/unimus | awk '{ print $2 }' | grep -i '^[0-9]' | sort | uniq )
+          echo "Image version: $VERSION"
+          docker push croc/unimus:$VERSION || { echo "version ($VERSION) image push error"; exit 1; }
+          docker push quay.io/croc/unimus:$VERSION || { echo "version ($VERSION) image push error"; exit 1; }
+  build-arm64:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+    # needs amd64 build because version number - arm image is not runable with buildx
+    needs: build-amd64
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v3
+      # buildx with quemu
+      - name: qemu setup for buildx for arm build
+        uses: docker/setup-qemu-action@v2
+      - name: setup buildx for arm build
+        id: buildx
+        uses: docker/setup-buildx-action@v2
+      - name: build image - ARM 64bit
+        env:
+          ARCH: ARM
+        run: |
+          echo "Buildx supported platforms: ${{ steps.buildx.outputs.platforms }}"
+          docker build --rm --platform linux/arm64 -t croc/unimus-arm64 . || { echo "docker image build failed - arm64"; exit 1; }
+          docker tag croc/unimus-arm64 croc/unimus-arm64
+          docker tag croc/unimus-arm64 quay.io/croc/unimus-arm64
+          docker images croc/unimus-arm64
+      - uses: actions/checkout@v3
+      - name: download artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: versionfile
+      - name: check image and add version tag
+        run: |
+          UNIMUS_CORE_VERSION=$( cat unimus.ver )
+          echo "Unimus core version (from file): $UNIMUS_CORE_VERSION"
+          [ -z "$UNIMUS_CORE_VERSION" ] && { echo "Unimus core version not found for arm64 retag"; exit 1; }
+          # create version tag
+          docker tag croc/unimus-arm64 croc/unimus-arm64:$UNIMUS_CORE_VERSION
+          docker tag croc/unimus-arm64 quay.io/croc/unimus-arm64:$UNIMUS_CORE_VERSION
+      - name: push container
+        env:
+          DOCKERHUB_USER: ${{ secrets.DOCKERHUB_USER }}
+          DOCKERHUB_PASS: ${{ secrets.DOCKERHUB_PASS }}
+          QUAYIO_USER: ${{ secrets.QUAYIO_USER }}
+          QUAYIO_PASS: ${{ secrets.QUAYIO_PASS }}
+        run: |
+          echo "$DOCKERHUB_PASS" | docker login --username=$DOCKERHUB_USER --password-stdin
+          echo "$QUAYIO_PASS" | docker login --username=$QUAYIO_USER --password-stdin quay.io
+          docker images | grep -iw unimus-arm64
+          # push latest images
+          docker push croc/unimus-arm64
+          docker push quay.io/croc/unimus-arm64
+          # push version tag
+          VERSION=$( docker images | grep -i croc/unimus-arm64 | awk '{ print $2 }' | grep -i '^[0-9]' | sort | uniq )
+          echo "Image version: $VERSION"
+          docker push croc/unimus-arm64:$VERSION || { echo "version ($VERSION) image push error - arm64"; exit 1; }
+          docker push quay.io/croc/unimus-arm64:$VERSION || { echo "version ($VERSION) image push error - arm64"; exit 1; }

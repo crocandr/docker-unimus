@@ -1,0 +1,138 @@
+version: 2.1
+
+jobs:
+  jarsigner-job:
+    docker:
+      - image: openjdk:slim
+    steps:
+      - setup_remote_docker:
+          version: 20.10.14
+      - run:
+          name: install curl
+          command: |
+            apt-get update && apt-get install -y curl
+      - checkout # download the code
+      - run:
+          name: download java binary
+          command: |
+            JAVA_ARTIFACT_URL=$( grep -i "ENV.*DOWNLOAD_URL" Dockerfile | awk '{ print $3 }' )
+            echo "Artifact url: $JAVA_ARTIFACT_URL"
+            #FILENAME=$( basename $JAVA_ARTIFACT_URL )
+            FILENAME="unimus.jar"
+            echo "Filename $FILENAME"
+            curl -k -L -o "$FILENAME" "$JAVA_ARTIFACT_URL" || { echo "Download error"; exit 1; }
+            ls -hal $FILENAME
+            jarsigner -verify $FILENAME | grep -i "jar verified" || { echo "Java binary is not verified"; exit 1; }
+            echo "Checksum: "
+            sha1sum $FILENAME | tee checksum.signed
+            mkdir -p checksum
+            cp -f checksum.signed checksum/
+            ls -hal checksum/checksum.signed
+      - persist_to_workspace:
+          root: checksum
+          paths:
+            - checksum.signed
+  containerbuilder-amd64-job:
+    machine:
+      image: ubuntu-2004:current
+    environment:
+      IMAGE_NAME: "croc/unimus"
+    steps:
+      - checkout
+      - attach_workspace:
+          at: /tmp/checksum
+      - run:
+          name: docker login
+          command: |
+            echo $DOCKERHUB_PASS | docker login --username $DOCKERHUB_USER --password-stdin
+            echo $QUAYIO_PASS | docker login --username $QUAYIO_USER --password-stdin quay.io
+      - run:
+          name: docker build arm64
+          command: |
+            uname -a
+            cp -f /tmp/checksum/checksum.signed files/
+            ls -hal files
+            sudo docker build -t $IMAGE_NAME . || { echo "Build failed"; exit 1; }
+            sudo docker inspect $IMAGE_NAME | grep -i architecture
+      - run:
+          name: check image and get version
+          command: |
+            docker-compose up -d
+            echo "waiting for up ..."
+            sleep 5
+            UNIMUS_VERSION=$( docker-compose logs unimus | awk -F ':' '/version/{ print $5 }' | awk '{ print $2 }' | tail -n1 )
+            echo "Unimus version: $UNIMUS_VERSION"
+            [ -z "$UNIMUS_VERSION" ] && { echo "Unimus version not found"; exit 1; }
+            # create version tag
+            docker tag $IMAGE_NAME $IMAGE_NAME:$UNIMUS_VERSION
+            docker tag $IMAGE_NAME quay.io/$IMAGE_NAME:$UNIMUS_VERSION
+      - run:
+          name: docker image push
+          command: |
+            docker images
+            docker tag $IMAGE_NAME $IMAGE_NAME:latest || { echo "retag failed"; exit 1; }
+            docker tag $IMAGE_NAME quay.io/$IMAGE_NAME:latest || { echo "retag failed"; exit 1; }
+            docker push $IMAGE_NAME:latest || { echo "push failed"; exit 1; }
+            docker push quay.io/$IMAGE_NAME:latest || { echo "push failed"; exit 1; }
+            VERSION=$( docker images | grep -i $IMAGE_NAME | awk '{ print $2 }' | grep -i '^[0-9]' | sort | uniq )
+            echo "Image version: $VERSION"
+            docker push $IMAGE_NAME:$VERSION || { echo "version ($VERSION) image push error"; exit 1; }
+            docker push quay.io/$IMAGE_NAME:$VERSION || { echo "version ($VERSION) image push error"; exit 1; }
+  containerbuilder-arm-job:
+    machine:
+      image: ubuntu-2004:current
+    resource_class: arm.medium
+    environment:
+      IMAGE_NAME: "croc/unimus-arm64"
+    steps:
+      - checkout
+      - attach_workspace:
+          at: /tmp/checksum
+      - run:
+          name: docker login
+          command: |
+            echo $DOCKERHUB_PASS | docker login --username $DOCKERHUB_USER --password-stdin
+            echo $QUAYIO_PASS | docker login --username $QUAYIO_USER --password-stdin quay.io
+      - run:
+          name: docker build arm64
+          command: |
+            uname -a
+            cp -f /tmp/checksum/checksum.signed files/
+            ls -hal files
+            sudo docker build -t $IMAGE_NAME . || { echo "Build failed"; exit 1; }
+            sudo docker inspect $IMAGE_NAME | grep -i architecture
+      - run:
+          name: check image and get version
+          command: |
+            docker run -tid --name unimus $IMAGE_NAME || { echo "run failed"; exit 1; }
+            echo "waiting for up ..."
+            sleep 5
+            UNIMUS_VERSION=$( docker logs unimus | awk -F ':' '/version/{ print $5 }' | awk '{ print $2 }' | tail -n1 )
+            echo "Unimus version: $UNIMUS_VERSION"
+            [ -z "$UNIMUS_VERSION" ] && { echo "Unimus version not found"; exit 1; }
+            # create version tag
+            docker tag $IMAGE_NAME $IMAGE_NAME:$UNIMUS_VERSION
+            docker tag $IMAGE_NAME quay.io/$IMAGE_NAME:$UNIMUS_VERSION
+      - run:
+          name: docker image push
+          command: |
+            docker images
+            docker tag $IMAGE_NAME $IMAGE_NAME:latest || { echo "retag failed"; exit 1; }
+            docker tag $IMAGE_NAME quay.io/$IMAGE_NAME:latest || { echo "retag failed"; exit 1; }
+            docker push $IMAGE_NAME:latest || { echo "push failed"; exit 1; }
+            docker push quay.io/$IMAGE_NAME:latest || { echo "push failed"; exit 1; }
+            VERSION=$( docker images | grep -i $IMAGE_NAME | awk '{ print $2 }' | grep -i '^[0-9]' | sort | uniq )
+            echo "Image version: $VERSION"
+            docker push $IMAGE_NAME:$VERSION || { echo "version ($VERSION) image push error"; exit 1; }
+            docker push quay.io/$IMAGE_NAME:$VERSION || { echo "version ($VERSION) image push error"; exit 1; }
+# workflows
+workflows:
+  myflow:
+    jobs:
+      - jarsigner-job
+      - containerbuilder-amd64-job:
+          requires:
+            - jarsigner-job
+      - containerbuilder-arm-job:
+          requires:
+            - jarsigner-job

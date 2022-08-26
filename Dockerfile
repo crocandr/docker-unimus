@@ -2,22 +2,21 @@ FROM debian:bullseye
 
 ENV DOWNLOAD_URL https://unimus.net/download-unimus/dev-builds/Unimus.jar
 
-RUN apt-get update && apt-get install -y curl vim less wget tzdata
+RUN apt-get update && apt-get install -y curl less wget tzdata
 
-#
-# Unimus 
+# copy all files into the container image
+COPY files/* /opt/
+
+# Unimus binary download
 RUN curl -L -o /opt/unimus.jar $DOWNLOAD_URL
+# check the downloaded file if checksum exists
+RUN if [ -f /opt/checksum.signed ]; then echo "Checking checksum..."; sha1sum /opt/unimus-core.jar > /opt/checksum.new; sed -i "s@/opt/@@g" /opt/checksum.new; cat /opt/checksum*; diff -q /opt/checksum.new /opt/checksum.signed || { echo "Checksum invalid"; exit 1; }; fi
 
-# JDK install and check
-RUN apt-get install -y openjdk-11-jdk-headless && \
-    jarsigner -verify /opt/unimus.jar | grep -i "jar verified" || { echo "Unimus binary is not verified"; exit 1; } && \
-    apt-get purge -y openjdk-11-jdk-headless
-# JRE install
+# JRE instal
 RUN apt-get install -y openjdk-11-jre-headless  
 
 #
-# Start script
-COPY files/start.sh /opt/start.sh
+# Start script permission
 RUN chmod 755 /opt/start.sh
 #
 ENTRYPOINT /opt/start.sh

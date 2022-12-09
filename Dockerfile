@@ -2,7 +2,7 @@ FROM debian:bullseye
 
 ENV DOWNLOAD_URL https://unimus.net/download-unimus/dev-builds/Unimus.jar
 
-RUN apt-get update && apt-get install -y curl less wget tzdata
+RUN apt-get update && apt-get install -y curl less wget tzdata iputils-ping 
 
 # copy all files into the container image
 COPY files/* /opt/

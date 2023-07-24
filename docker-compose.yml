@@ -2,7 +2,7 @@ version: "3"
 
 services:
   db:
-    image: mariadb
+    image: mariadb:10
     environment:
       - MYSQL_ROOT_PASSWORD=supersecret
       - MYSQL_DATABASE=unimus

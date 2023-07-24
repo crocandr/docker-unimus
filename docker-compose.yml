@@ -2,7 +2,7 @@ version: "3"
 
 services:
   db:
-    image: mariadb
+    image: mariadb:10
     command: --max_allowed_packet=268M
     environment:
       - MYSQL_ROOT_PASSWORD=supersecret

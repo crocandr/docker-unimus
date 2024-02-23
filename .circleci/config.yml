@@ -34,7 +34,7 @@ jobs:
             - checksum.signed
   containerbuilder-amd64-job:
     machine:
-      image: ubuntu-2004:current
+      image: ubuntu-2204:current
     environment:
       IMAGE_NAME: "croc/unimus"
     steps:
@@ -80,7 +80,7 @@ jobs:
             docker push quay.io/$IMAGE_NAME:$VERSION || { echo "version ($VERSION) image push error"; exit 1; }
   containerbuilder-arm-job:
     machine:
-      image: ubuntu-2004:current
+      image: ubuntu-2204:current
     resource_class: arm.medium
     environment:
       IMAGE_NAME: "croc/unimus-arm64"

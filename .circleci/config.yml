@@ -6,7 +6,7 @@ jobs:
       - image: openjdk:slim
     steps:
       - setup_remote_docker:
-          version: 20.10.14
+          version: docker24
       - run:
           name: install curl
           command: |

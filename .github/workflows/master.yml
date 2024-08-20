@@ -35,10 +35,11 @@ jobs:
           docker images croc/unimus
       - name: check image and add version tag
         run: |
-          docker-compose up -d
+          docker run -tid --rm --name unimus-test croc/unimus || { echo "test container start failed"; exit 1; }
           echo "waiting for up ..."
           sleep 5
-          UNIMUS_CORE_VERSION=$( docker-compose logs unimus | awk -F ':' '/version/{ print $5 }' | awk '{ print $2 }' | tail -n1 )
+          UNIMUS_CORE_VERSION=$( docker logs unimus-test | awk -F ':' '/version/{ print $5 }' | awk '{ print $2 }' | tail -n1 )
+          docker rm -v -f unimus-test
           echo "Unimus core version: $UNIMUS_CORE_VERSION"
           [ -z "$UNIMUS_CORE_VERSION" ] && { echo "Unimus core version not found"; exit 1; }
           # create version tag

@@ -1,0 +1,55 @@
+# This is a basic workflow to help you get started with Actions
+
+name: Stayactive-CI
+
+# Controls when the workflow will run
+on:
+  # Triggers the workflow on push or pull request events but only for the "master" branch
+  push:
+    branches:
+      - '**'  # every branch
+      - '!stayactive'  # except stayactive
+  pull_request:
+    branches: [ "master" ]
+  schedule:
+    - cron: '00 5 * * 6' # every Sunday at 5:00
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  stayactive:
+    runs-on: ubuntu-latest
+    steps:
+      - name: clone-update-push-delete
+        env:
+          PRIVKEY: ${{ secrets.PRIVKEY }}
+        run: |
+          # convert privkey to valid openssh privkey
+          echo "$PRIVKEY" | tr ' ' '\n' > $GITHUB_WORKSPACE/customkey.orig
+          echo -n > $GITHUB_WORKSPACE/customkey
+          # first line
+          cat $GITHUB_WORKSPACE/customkey.orig | head -n4 | tr '\n' ' ' | sed 's@ $@\n@g' >> $GITHUB_WORKSPACE/customkey
+          # key content
+          cat $GITHUB_WORKSPACE/customkey.orig | egrep -iv '(----|end|begin|openssh|private)' >> $GITHUB_WORKSPACE/customkey
+          # last line
+          cat $GITHUB_WORKSPACE/customkey.orig | tail -n-4 | tr '\n' ' ' | sed 's@ $@\n@g' >> $GITHUB_WORKSPACE/customkey
+          # permission fix
+          chmod 600 $GITHUB_WORKSPACE/customkey
+          # git ssh param export
+          export GIT_SSH_COMMAND="ssh -i $GITHUB_WORKSPACE/customkey -o StrictHostKeyChecking=no"
+          # debug
+          #cat $GITHUB_WORKSPACE/customkey | base64
+          echo "Github repo: $GITHUB_REPOSITORY"
+          git clone git@github.com:$GITHUB_REPOSITORY.git $GITHUB_WORKSPACE/code || { echo "git clone error"; exit 1; }
+          cd $GITHUB_WORKSPACE/code || { echo "folder change problem"; exit 1; }
+          git branch stayactive
+          git checkout stayactive
+          date >> status.txt
+          git config user.name $GITHUB_REPOSITORY_OWNER
+          git config user.email automation@dummy
+          git add status.txt
+          git commit -m "stay active"
+          git push origin stayactive:stayactive || { echo "Stayactive branch push error"; exit 1; }
+          git push origin -d stayactive || { echo "Stayactive branch delete error"; exit 1; }

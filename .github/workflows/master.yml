@@ -25,7 +25,7 @@ jobs:
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: build image - AMD64
         run: |
           docker build --rm -t croc/unimus . || { echo "docker image build failed - amd64"; exit 1; }
@@ -48,7 +48,7 @@ jobs:
           # save version number for arm build
           echo $UNIMUS_CORE_VERSION > unimus.ver
       - name: upload artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: versionfile
           path: unimus.ver
@@ -78,7 +78,7 @@ jobs:
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       # buildx with quemu
       - name: qemu setup for buildx for arm build
         uses: docker/setup-qemu-action@v2
@@ -94,9 +94,9 @@ jobs:
           docker tag croc/unimus-arm64 croc/unimus-arm64
           docker tag croc/unimus-arm64 quay.io/croc/unimus-arm64
           docker images croc/unimus-arm64
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: download artifact
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: versionfile
       - name: check image and add version tag

@@ -1,4 +1,4 @@
-FROM debian:bookworm
+FROM debian:latest
 
 ENV DOWNLOAD_URL https://download.unimus.net/unimus/-%20Latest/Unimus.jar
 

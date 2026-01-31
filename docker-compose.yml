@@ -1,5 +1,3 @@
-version: "3"
-
 services:
   db:
     image: mariadb:10
@@ -11,8 +9,8 @@ services:
       - MYSQL_PASSWORD=secret
       #- TZ=Europe/Budapest
     volumes:
-      - './db:/var/lib/mysql'
-      - '/etc/localtime:/etc/localtime:ro'
+      - "./db:/var/lib/mysql"
+      - "/etc/localtime:/etc/localtime:ro"
     restart: unless-stopped
   unimus:
     image: croc/unimus
@@ -24,11 +22,11 @@ services:
       - JAVA_OPTS=-Xms256M -Xmx1024M -Dunimus.core.connect-timeout=20000 -Dunimus.core.inter-connection-delay=1000 -Dunimus.core.cli-expect-timeout=30000
       - TZ=Europe/Budapest
     volumes:
-      - './config:/etc/unimus'
+      - "./config:/etc/unimus"
       #- '/etc/localtime:/etc/localtime:ro'
     depends_on:
       - db
     ports:
-      - '8085:8085'
-#      - '5509:5509' # for unimus-core connection if the unimus version is higher than 2.0.0
+      - "8085:8085"
+    #      - '5509:5509' # for unimus-core connection if the unimus version is higher than 2.0.0
     restart: unless-stopped

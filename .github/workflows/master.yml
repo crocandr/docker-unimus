@@ -66,7 +66,7 @@ jobs:
           docker push croc/unimus
           docker push quay.io/croc/unimus
           # push version tag
-          VERSION=$( docker images | grep -i croc/unimus | awk '{ print $1 }' | cut -f2 -d':' | grep -i '^[0-9]' | sort | uniq )
+          VERSION=$( docker images --format "{{.Repository}}:{{.Tag}}:{{.ID}}" | grep -i croc/unimus | cut -f2 -d':' | grep -i '^[0-9]' | sort | uniq )
           echo "Image version: $VERSION"
           docker push croc/unimus:$VERSION || { echo "version ($VERSION) image push error"; exit 1; }
           docker push quay.io/croc/unimus:$VERSION || { echo "version ($VERSION) image push error"; exit 1; }
@@ -121,7 +121,7 @@ jobs:
           docker push croc/unimus-arm64
           docker push quay.io/croc/unimus-arm64
           # push version tag
-          VERSION=$( docker images | grep -i croc/unimus-arm64 | awk '{ print $1 }' | cut -f2 -d':' | grep -i '^[0-9]' | sort | uniq )
+          VERSION=$( docker images --format "{{.Repository}}:{{.Tag}}:{{.ID}}" | grep -i croc/unimus-arm64 | cut -f2 -d':' | grep -i '^[0-9]' | sort | uniq )
           echo "Image version: $VERSION"
           docker push croc/unimus-arm64:$VERSION || { echo "version ($VERSION) image push error - arm64"; exit 1; }
           docker push quay.io/croc/unimus-arm64:$VERSION || { echo "version ($VERSION) image push error - arm64"; exit 1; }
